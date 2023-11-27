@@ -1,27 +1,38 @@
-import falcon
+from falcon import *
 
-secret_key = falcon.SecretKey(512)
-public_key = falcon.PublicKey(secret_key)
+secret_key = SecretKey(128)
+f, g, F, G = secret_key.f, secret_key.g, secret_key.F, secret_key.G
 
-print(secret_key)
-print()
-print(public_key)
-print()
+public_key = PublicKey(secret_key)
+h = public_key.h
+
+print(f"f: {f}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
+print(f"g: {g}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
+print(f"F: {F}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
+print(f"G: {G}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
+print(f"fG - gF = {q}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
+print(f"h = gf^-1 mod (x**512 + 1, {q}):\n{h}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
 
 message = b"Hello!"
 
+
 signature = secret_key.sign(message)
 print(f"Message = {message}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
 print(f"Signature = {signature}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
+print(f"Verification: {public_key.verify(message, signature)}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
 
-print()
-print(f"Legit? {public_key.verify(message, signature)}")
-
-print(signature[5])
-print((ord(b"\x01")^signature[5]))
-
-tampered_byte = ord(b"\x01") ^ signature[5]
-bad_signature = signature[0:5] + tampered_byte.to_bytes(1, 'little') + signature[6:]
-print(bad_signature)
+tampered_byte = ord(b"\x01") ^ signature[2]
+bad_signature = signature[0:2] + tampered_byte.to_bytes(1, 'little') + signature[3:]
+print(f"Tampered Signature = {bad_signature}")
+input('----------------------------------------------------------------------------------------------------------------------------------------------')
 
 print(f"Legit after modification? {public_key.verify(message, bad_signature)}")

@@ -379,12 +379,19 @@ class SecretKey:
         s0 = sub_zq(hashed, mul_zq(s1, self.h))
         s0 = [(coef + (q >> 1)) % q - (q >> 1) for coef in s0]
 
+        print(f"s0: {s0}")
+        input('----------------------------------------------------------------------------------------------------------------------------------------------')
+        print(f"s1: {s1}")
+        input('----------------------------------------------------------------------------------------------------------------------------------------------')
+
         # Check that the (s0, s1) is short
         norm_sign = sum(coef ** 2 for coef in s0)
         norm_sign += sum(coef ** 2 for coef in s1)
         if norm_sign > self.signature_bound:
-            print("Squared norm of signature is too large:", norm_sign)
+            print(f"Squared norm of signature is {norm_sign}, which is larger than {self.signature_bound}:")
             return False
+        
+        print(f"Squared norm of signature is {norm_sign}, which is smaller than {self.signature_bound}")
 
         # If all checks are passed, accept
         return True
